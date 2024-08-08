@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import './DatePicker.css';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+
 const DatePicker = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -14,8 +17,8 @@ const DatePicker = () => {
     const [reminders, setReminders] = useState({}); // State to track reminders
 
     const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
+        "Jan", "Feb", "Mar", "Apr", "May", "June",
+        "July", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
 
     const handlePrevMonth = () => {
@@ -41,7 +44,7 @@ const DatePicker = () => {
         setSelectedDate(day);
         setSelectedMonth(currentMonth);
         setSelectedYear(currentYear);
-        setShowReminderArea(true); // Show reminder area when a date is clicked
+        setShowReminderArea(false); // Show reminder area when a date is clicked
     };
 
     const addReminder = () => {
@@ -61,8 +64,6 @@ const DatePicker = () => {
         setReminderText("");
         setShowReminderArea(false);
         setError("");
-        alert(`${selectedDate} ${selectedMonth} ${selectedYear} --> reminder`)
-        alert(`${reminderText} --> reminderText`)
     };
 
     const handleSubmit = (event) => {
@@ -102,7 +103,6 @@ const DatePicker = () => {
 
         const reminderKey = `${currentYear}-${currentMonth}-${day}`;
         const hasReminder = reminders[reminderKey];
-
         if (isToday) return `today ${isSelected ? 'selected' : ''} ${hasReminder ? 'set_reminder' : ''}`;
         if (isPast) return `past_date ${hasReminder ? 'set_reminder' : ''}`;
         if (isFuture) return `${isSelected ? 'selected' : ''} future_date ${hasReminder ? 'set_reminder' : ''}`;
@@ -112,9 +112,13 @@ const DatePicker = () => {
         <div className="date_picker_wrap">
             <div className="date_picker">
                 <div className="header">
-                    <button onClick={handlePrevMonth}>&lt;</button>
-                    <span>{months[currentMonth]} {currentYear}</span>
-                    <button onClick={handleNextMonth}>&gt;</button>
+                    <div className="month_wrap">
+                        <span>{months[currentMonth]}</span><span className="slash">/</span><span>{currentYear}</span>
+                    </div>
+                    <div className="month_nav">
+                        <button onClick={handlePrevMonth}><span><FontAwesomeIcon icon={faArrowLeft} /></span></button>
+                        <button onClick={handleNextMonth}><span><FontAwesomeIcon icon={faArrowRight} /></span></button>
+                    </div>
                 </div>
                 <div className="calendar">
                     <div className="day_names">
@@ -134,6 +138,10 @@ const DatePicker = () => {
                                 onClick={() => handleDateClick(day)}
                             >
                                 {day}
+                                {day && reminders[`${currentYear}-${currentMonth}-${day}`]
+                                    && (
+                                        <span className="hasReminder"></span>
+                                    )}
                             </div>
                         ))}
                     </div>
@@ -171,7 +179,7 @@ const DatePicker = () => {
                     )}
                 </div>
             </form>
-        </div>
+        </div >
     );
 }
 
