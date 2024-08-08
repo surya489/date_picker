@@ -9,6 +9,8 @@ const DatePicker = () => {
     const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
     const [selectedYear, setSelectedYear] = useState(today.getFullYear());
     const [showReminderArea, setShowReminderArea] = useState(false);
+    const [reminderText, setReminderText] = useState("");
+    const [error, setError] = useState("");
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -45,32 +47,32 @@ const DatePicker = () => {
         }
     };
 
-    const addReminder = (message) => {
-        if (!showReminderArea && selectedDate) {
-            setShowReminderArea(true);
+    const addReminder = () => {
+        if (showReminderArea) {
+            if (reminderText.trim() === "") {
+                setError("Reminder text cannot be empty");
+            } else {
+                setError("");
+                setShowReminderArea(true);
+            }
         }
     }
 
     const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
-    // Get the first day of the month (0 = Sunday, 1 = Monday, etc.)
     const getFirstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
 
-    // Calculate the number of empty cells needed after the last day
     const daysInMonth = getDaysInMonth(currentMonth, currentYear);
     const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
     const daysAfterLast = (7 - (daysInMonth + firstDay) % 7) % 7;
 
     const days = [];
-    // Add empty cells for the days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
         days.push(null);
     }
-    // Add the actual days of the month
     for (let i = 1; i <= daysInMonth; i++) {
         days.push(i);
     }
-    // Add empty cells for the days after the last day of the month
     for (let i = 0; i < daysAfterLast; i++) {
         days.push(null);
     }
@@ -122,18 +124,44 @@ const DatePicker = () => {
                     </div>
                 </div>
             </div>
-            {selectedDate && (
-                <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`}>
-                    <textarea id="reminder" name="reminder" rows="4" cols="50" placeholder="Type Your Reminders Here . . . ." />
+            <form id="reminder_form" className="reminder_form">
+                {selectedDate && (
+                    <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`}>
+                        <textarea
+                            id="reminder"
+                            name="reminder"
+                            rows="4"
+                            cols="50"
+                            placeholder="Type Your Reminders Here . . . ."
+                            value={reminderText}
+                            onChange={(e) => setReminderText(e.target.value)}
+                        />
+                        {error && <div className="error">{error}</div>}
+                    </div>
+                )}
+                <div className="add_reminder">
+                    {!showReminderArea ? (
+                        <button onClick={() => {
+                            setShowReminderArea(true);
+                        }} className={`${showReminderArea ? 'clicked' : ''} btn`} disabled={showReminderArea ? true : false}>
+                            {showReminderArea ? "Add Reminder" : 'Set Reminder'}
+                        </button>
+                    ) : (
+                        <input
+                            onClick={() => {
+                                if (showReminderArea) {
+                                    addReminder();
+                                } else {
+                                    setShowReminderArea(true);  // Show the textarea for entering the reminder
+                                }
+                            }}
+                            type="submit"
+                            className={`${showReminderArea ? 'clicked' : ''} btn`}
+                            value={showReminderArea ? "Add Reminder" : 'Set Reminder'}
+                        />
+                    )}
                 </div>
-            )}
-            <div className="add_reminder">
-                <input onClick={() => {
-                    addReminder('clicked');
-                }} type="submit"
-                    className={`${showReminderArea ? 'clicked' : ''} btn`}
-                    value={showReminderArea ? "Add Reminder" : 'Set Reminder'} />
-            </div>
+            </form >
         </div >
     );
 }
