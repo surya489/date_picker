@@ -19,6 +19,7 @@ const DatePicker = () => {
         const storedReminders = localStorage.getItem('reminders');
         return storedReminders ? JSON.parse(storedReminders) : {};
     });
+    const [showMonthsDropdown, setShowMonthsDropdown] = useState(false);
 
     const months = [
         "Jan", "Feb", "Mar", "Apr", "May", "June",
@@ -63,7 +64,6 @@ const DatePicker = () => {
 
             setReminders(newReminders);
             localStorage.setItem('reminders', JSON.stringify(newReminders)); // Store reminders in local storage
-            console.log(newReminders); // Console log the stored data
 
             resetForm(); // Reset the form after successful submission
         }
@@ -94,8 +94,6 @@ const DatePicker = () => {
                     </div>
                 </div>
             )
-            console.log(`Date: ${day}-${parseInt(month) + 1}-${year}`);
-            console.log(`Reminder: ${text}`);
         });
     };
 
@@ -140,12 +138,38 @@ const DatePicker = () => {
         if (isFuture) return `${isSelected ? 'selected' : ''} future_date ${hasReminder ? 'set_reminder' : ''}`;
     };
 
+    const toggleDropdown = () => {
+        setShowMonthsDropdown(!showMonthsDropdown);
+    };
+
+    const handleMonthClick = (index) => {
+        setCurrentMonth(index);
+        setShowMonthsDropdown(false); // Close the dropdown after selection
+    };
+
     return (
         <div className="date_picker_wrap">
             <div className="date_picker">
                 <div className="header">
                     <div className="month_wrap">
-                        <span>{months[currentMonth]}</span><span className="slash">/</span><span>{currentYear}</span>
+                        <span className="current_month">
+                            <div className="selected_month" onClick={toggleDropdown}>
+                                <span>{months[currentMonth]}</span>
+                            </div>
+                            {showMonthsDropdown && (
+                                <div className="month_list_wrap">
+                                    <ul className="month_list">
+                                        {months.map((month, index) => (
+                                            <li key={index} className={`${index === currentMonth ? 'active_month' : ''}`} onClick={() => handleMonthClick(index)}>
+                                                {month}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </span>
+                        <span className="slash">/</span>
+                        <span>{currentYear}</span>
                     </div>
                     <div className="month_nav">
                         <button onClick={handlePrevMonth}><span><FontAwesomeIcon icon={faArrowLeft} /></span></button>

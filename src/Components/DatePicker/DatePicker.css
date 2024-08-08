@@ -69,8 +69,12 @@
 }
 
 .day:hover {
-    background: blue;
+    background: rgb(0, 0, 255, 0.7);
     color: #fff;
+}
+
+.day.set_reminder:hover {
+    background: blue;
 }
 
 .day.empty,
@@ -194,7 +198,7 @@
 .reminder_info {
     position: absolute;
     z-index: 1;
-    background: blue;
+    background: rgb(0, 0, 255, 0.7);
     padding: 10px 20px;
     top: -100%;
     left: 50%;
@@ -219,13 +223,80 @@
     position: absolute;
     bottom: -7px;
     right: 50%;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid blue;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgb(0, 0, 255, 0.7);
     transform: rotate(180deg) translateX(-50%);
+}
+
+.reminder_info div {
+    padding: 10px;
+    /* background: blue; */
+    min-width: 80px;
 }
 
 .day.set_reminder:hover .reminder_info {
     opacity: 1;
     visibility: visible;
+}
+
+.current_month {
+    position: relative;
+    cursor: pointer;
+}
+
+.month_list_wrap {
+    width: 100%;
+    position: absolute;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background: blue;
+    max-height: 100px;
+    z-index: 1;
+    min-width: 70px;
+    align-items: center;
+    min-height: 100px;
+}
+
+.month_list {
+    cursor: pointer;
+    list-style-type: none;
+    margin: 0;
+    background: blue;
+    padding: 0;
+    max-height: 100px;
+    overflow: auto;
+    z-index: 1;
+    min-width: 70px;
+    align-items: center;
+}
+
+.month_list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.month_list li {
+    padding: 5px 10px;
+    background-color: blue;
+    font-size: 14px;
+}
+
+.month_list li:first-child {
+    padding-top: 10px;
+}
+
+.month_list li:last-child {
+    padding-bottom: 10px;
+}
+
+.month_list::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    right: 50%;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgb(0, 0, 255);
+    transform: rotate(0deg) translateX(50%);
 }
