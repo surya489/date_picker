@@ -5,6 +5,9 @@ const DatePicker = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const today = new Date();
+    const [selectedDate, setSelectedDate] = useState(today.getDate());
+    const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
+    const [selectedYear, setSelectedYear] = useState(today.getFullYear());
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -29,7 +32,13 @@ const DatePicker = () => {
         }
     };
 
-    // Get the number of days in the month
+    const handleDateClick = (day) => {
+        if (!day) return;
+        setSelectedDate(day);
+        setSelectedMonth(currentMonth);
+        setSelectedYear(currentYear);
+    };
+
     const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
     // Get the first day of the month (0 = Sunday, 1 = Monday, etc.)
@@ -62,11 +71,12 @@ const DatePicker = () => {
             (currentYear === today.getFullYear() && currentMonth < today.getMonth()) ||
             (currentYear === today.getFullYear() && currentMonth === today.getMonth() && day < today.getDate());
 
+        const isSelected = day === selectedDate && currentMonth === selectedMonth && currentYear === selectedYear;
         const isFuture = !isToday && !isPast;
 
-        if (isToday) return 'today';
+        if (isToday) return `today ${isSelected ? 'selected' : ''}`;
         if (isPast) return 'past_date';
-        if (isFuture) return 'future_date';
+        if (isFuture) return `${isSelected ? 'selected' : ''} future_date`;
     };
 
     return (
@@ -92,12 +102,16 @@ const DatePicker = () => {
                             <div
                                 key={index}
                                 className={`day ${getDayClass(day)}`}
+                                onClick={() => handleDateClick(day)}
                             >
                                 {day}
                             </div>
                         ))}
                     </div>
                 </div>
+            </div>
+            <div className="add_reminder">
+                <button className="btn">Add Reminder</button>
             </div>
         </div>
     );
