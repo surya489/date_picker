@@ -54,6 +54,21 @@ const DatePicker = () => {
         days.push(null);
     }
 
+    const getDayClass = (day) => {
+        if (!day) return 'empty';
+
+        const isToday = day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+        const isPast = (currentYear < today.getFullYear()) ||
+            (currentYear === today.getFullYear() && currentMonth < today.getMonth()) ||
+            (currentYear === today.getFullYear() && currentMonth === today.getMonth() && day < today.getDate());
+
+        const isFuture = !isToday && !isPast;
+
+        if (isToday) return 'today';
+        if (isPast) return 'past_date';
+        if (isFuture) return 'future_date';
+    };
+
     return (
         <div className="date_picker_wrap">
             <div className="date_picker">
@@ -76,8 +91,7 @@ const DatePicker = () => {
                         {days.map((day, index) => (
                             <div
                                 key={index}
-                                className={`day ${day ? '' : 'empty'} ${day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear() ? 'today' : ''
-                                    }`}
+                                className={`day ${getDayClass(day)}`}
                             >
                                 {day}
                             </div>
