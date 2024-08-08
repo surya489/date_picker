@@ -302,3 +302,9 @@
     border-right: 8px solid transparent;
     border-bottom: 8px solid rgb(0, 0, 255);
 }
+
+@media(max-width: 740px) {
+    .date_picker_wrap {
+        max-width: 300px;
+    }
+}
