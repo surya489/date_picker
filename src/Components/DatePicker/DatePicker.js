@@ -11,6 +11,7 @@ const DatePicker = () => {
     const [showReminderArea, setShowReminderArea] = useState(false);
     const [reminderText, setReminderText] = useState("");
     const [error, setError] = useState("");
+    const [reminders, setReminders] = useState({}); // State to track reminders
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -40,24 +41,21 @@ const DatePicker = () => {
         setSelectedDate(day);
         setSelectedMonth(currentMonth);
         setSelectedYear(currentYear);
-        if (!showReminderArea && !selectedDate) {
-            setShowReminderArea(true);
-        } else {
-            setShowReminderArea(false);
-        }
+        setShowReminderArea(true); // Show reminder area when a date is clicked
     };
 
     const addReminder = () => {
-        if (showReminderArea) {
-            if (reminderText.trim() === "") {
-                setError("Reminder text cannot be empty");
-            } else {
-                setError("");
-                setShowReminderArea(true);
-                resetForm();
-            }
+        if (reminderText.trim() === "") {
+            setError("Reminder text cannot be empty");
+        } else {
+            setError("");
+            setReminders((prevReminders) => ({
+                ...prevReminders,
+                [`${selectedYear}-${selectedMonth}-${selectedDate}`]: reminderText,
+            }));
+            resetForm(); // Reset the form after successful submission
         }
-    }
+    };
 
     const resetForm = () => {
         setReminderText("");
@@ -102,9 +100,12 @@ const DatePicker = () => {
         const isSelected = day === selectedDate && currentMonth === selectedMonth && currentYear === selectedYear;
         const isFuture = !isToday && !isPast;
 
-        if (isToday) return `today ${isSelected ? 'selected' : ''}`;
-        if (isPast) return 'past_date';
-        if (isFuture) return `${isSelected ? 'selected' : ''} future_date`;
+        const reminderKey = `${currentYear}-${currentMonth}-${day}`;
+        const hasReminder = reminders[reminderKey];
+
+        if (isToday) return `today ${isSelected ? 'selected' : ''} ${hasReminder ? 'set_reminder' : ''}`;
+        if (isPast) return `past_date ${hasReminder ? 'set_reminder' : ''}`;
+        if (isFuture) return `${isSelected ? 'selected' : ''} future_date ${hasReminder ? 'set_reminder' : ''}`;
     };
 
     return (
