@@ -8,6 +8,7 @@ const DatePicker = () => {
     const [selectedDate, setSelectedDate] = useState(today.getDate());
     const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
     const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+    const [showReminderArea, setShowReminderArea] = useState(false);
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -37,7 +38,18 @@ const DatePicker = () => {
         setSelectedDate(day);
         setSelectedMonth(currentMonth);
         setSelectedYear(currentYear);
+        if (!showReminderArea && !selectedDate) {
+            setShowReminderArea(true);
+        } else {
+            setShowReminderArea(false);
+        }
     };
+
+    const addReminder = (message) => {
+        if (!showReminderArea && selectedDate) {
+            setShowReminderArea(true);
+        }
+    }
 
     const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
@@ -110,10 +122,19 @@ const DatePicker = () => {
                     </div>
                 </div>
             </div>
+            {selectedDate && (
+                <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`}>
+                    <textarea id="reminder" name="reminder" rows="4" cols="50" placeholder="Type Your Reminders Here . . . ." />
+                </div>
+            )}
             <div className="add_reminder">
-                <button className="btn">Add Reminder</button>
+                <input onClick={() => {
+                    addReminder('clicked');
+                }} type="submit"
+                    className={`${showReminderArea ? 'clicked' : ''} btn`}
+                    value={showReminderArea ? "Add Reminder" : 'Set Reminder'} />
             </div>
-        </div>
+        </div >
     );
 }
 

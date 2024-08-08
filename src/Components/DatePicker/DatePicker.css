@@ -10,6 +10,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     overflow: hidden;
+    margin-bottom: 15px;
 }
 
 .header {
@@ -58,9 +59,7 @@
     text-align: center;
     padding: 10px;
     background: linear-gradient(145deg, #fff, #f0f0f0);
-    /* border: 1px solid #e0e4e7; */
     border-radius: 8px;
-    /* box-shadow: 0 4px 8px #0000001a; */
     transition: all .3s ease;
 }
 
@@ -107,4 +106,35 @@
     background-color: #fff;
     color: blue;
     border-color: blue;
+}
+
+.btn.clicked {
+    background-color: #fff;
+    color: blue;
+    border-color: blue;
+}
+
+.btn.clicked:hover {
+    background-color: blue;
+    color: #fff;
+    border-color: transparent;
+}
+
+.reminder_text {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s, opacity 0.5s;
+}
+
+.reminder_text.show {
+    max-height: 100px;
+    opacity: 1;
+}
+
+.reminder_text textarea {
+    display: block;
+    width: 99%;
+    margin: 0;
+    padding: 0;
 }
