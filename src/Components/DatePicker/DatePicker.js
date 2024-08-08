@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './DatePicker.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,7 +14,11 @@ const DatePicker = () => {
     const [showReminderArea, setShowReminderArea] = useState(false);
     const [reminderText, setReminderText] = useState("");
     const [error, setError] = useState("");
-    const [reminders, setReminders] = useState({}); // State to track reminders
+    const [reminders, setReminders] = useState(() => {
+        // Retrieve stored reminders from local storage on initial render
+        const storedReminders = localStorage.getItem('reminders');
+        return storedReminders ? JSON.parse(storedReminders) : {};
+    });
 
     const months = [
         "Jan", "Feb", "Mar", "Apr", "May", "June",
@@ -44,7 +48,7 @@ const DatePicker = () => {
         setSelectedDate(day);
         setSelectedMonth(currentMonth);
         setSelectedYear(currentYear);
-        setShowReminderArea(false); // Show reminder area when a date is clicked
+        setShowReminderArea(false); // Hide reminder area initially
     };
 
     const addReminder = () => {
@@ -52,10 +56,15 @@ const DatePicker = () => {
             setError("Reminder text cannot be empty");
         } else {
             setError("");
-            setReminders((prevReminders) => ({
-                ...prevReminders,
+            const newReminders = {
+                ...reminders,
                 [`${selectedYear}-${selectedMonth}-${selectedDate}`]: reminderText,
-            }));
+            };
+
+            setReminders(newReminders);
+            localStorage.setItem('reminders', JSON.stringify(newReminders)); // Store reminders in local storage
+            console.log(newReminders); // Console log the stored data
+
             resetForm(); // Reset the form after successful submission
         }
     };
@@ -70,6 +79,29 @@ const DatePicker = () => {
         event.preventDefault(); // Prevent page reload
         addReminder(); // Call addReminder to handle validation and submission
     };
+
+    // Function to print the date and reminder text separately
+    const printReminders = () => {
+        Object.entries(reminders).forEach(([date, text]) => {
+            const [year, month, day] = date.split('-');
+            return (
+                <div>
+                    <div>
+                        {text}
+                    </div>
+                    <div>
+                        ${day}-${parseInt(month) + 1}-${year}
+                    </div>
+                </div>
+            )
+            console.log(`Date: ${day}-${parseInt(month) + 1}-${year}`);
+            console.log(`Reminder: ${text}`);
+        });
+    };
+
+    // Call the function to print the reminders
+    printReminders();
+
 
     const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
@@ -138,6 +170,11 @@ const DatePicker = () => {
                                 onClick={() => handleDateClick(day)}
                             >
                                 {day}
+                                {day && reminders[`${currentYear}-${currentMonth}-${day}`] && (
+                                    <div className="reminder_info">
+                                        <div>{reminders[`${currentYear}-${currentMonth}-${day}`]}</div>
+                                    </div>
+                                )}
                                 {day && reminders[`${currentYear}-${currentMonth}-${day}`]
                                     && (
                                         <span className="hasReminder"></span>
@@ -179,7 +216,7 @@ const DatePicker = () => {
                     )}
                 </div>
             </form>
-        </div >
+        </div>
     );
 }
 

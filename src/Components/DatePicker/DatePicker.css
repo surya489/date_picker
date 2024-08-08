@@ -190,3 +190,42 @@
 .month_nav button:hover {
     opacity: 1;
 }
+
+.reminder_info {
+    position: absolute;
+    z-index: 1;
+    background: blue;
+    padding: 10px 20px;
+    top: -100%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    max-width: 100px;
+    min-width: 100px;
+    overflow-wrap: break-word;
+    opacity: 0;
+    color: #fff;
+    visibility: hidden;
+    min-height: 40px;
+    max-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .5s;
+}
+
+.reminder_info::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    right: 50%;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid blue;
+    transform: rotate(180deg) translateX(-50%);
+}
+
+.day.set_reminder:hover .reminder_info {
+    opacity: 1;
+    visibility: visible;
+}
