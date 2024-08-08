@@ -273,13 +273,26 @@
 }
 
 .month_list::-webkit-scrollbar {
-    width: 4px;
+    width: 0px;
 }
 
 .month_list li {
     padding: 5px 10px;
     background-color: blue;
     font-size: 14px;
+    text-align: center;
+    color: #fff;
+    transition: all .5s;
+}
+
+.month_list li.active_month {
+    background-color: #fff;
+    color: blue;
+}
+
+.month_list li:hover {
+    color: blue;
+    background: #fff;
 }
 
 .month_list li:first-child {
