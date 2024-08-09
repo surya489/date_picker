@@ -44,14 +44,14 @@
     padding: 10px;
 }
 
-.day_names {
+.weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     font-weight: bold;
     margin-bottom: 5px;
 }
 
-.day_names span {
+.weekdays span {
     text-align: center;
 }
 

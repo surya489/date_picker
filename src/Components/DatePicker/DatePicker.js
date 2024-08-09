@@ -21,9 +21,9 @@ const removeExpiredReminders = (reminders, today) => {
 };
 
 const DatePicker = () => {
-    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const today = new Date();
+    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+    const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [selectedDate, setSelectedDate] = useState(today.getDate());
     const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
     const [selectedYear, setSelectedYear] = useState(today.getFullYear());
@@ -37,6 +37,7 @@ const DatePicker = () => {
     });
     const [showMonthsDropdown, setShowMonthsDropdown] = useState(false);
     const dropdownRef = useRef(null); // Ref for the dropdown
+    const reminderRef = useRef(null);
 
     const months = [
         "Jan", "Feb", "Mar", "Apr", "May", "June",
@@ -45,10 +46,10 @@ const DatePicker = () => {
 
     const weeklyDays = [
         "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
-    ]
+    ];
 
     const earliestYear = currentYear; // Define the earliest year to display
-    const earliestMonth = 7;   // January (0 index)
+    const earliestMonth = today.getMonth();   // August (0 index)
 
     const handlePrevMonth = () => {
         if (currentMonth === 0) {
@@ -104,6 +105,11 @@ const DatePicker = () => {
         addReminder(); // Call addReminder to handle validation and submission
     };
 
+    const getDayOfWeek = (year, month, day) => {
+        const date = new Date(year, month, day);
+        return weeklyDays[date.getDay()];
+    };
+
     // Use a separate effect for reminder cleanup
     useEffect(() => {
         const today = new Date();
@@ -119,6 +125,9 @@ const DatePicker = () => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowMonthsDropdown(false);
+            }
+            if (reminderRef.current && !reminderRef.current.contains(event.target)) {
+                setShowReminderArea(false);
             }
         };
 
@@ -201,22 +210,19 @@ const DatePicker = () => {
                         <span className="slash">/</span>
                         <span>{currentYear}</span>
                     </div>
-                    <div className="month_nav">
-                        <button className={`${isPrevMonthDisabled ? 'disabled' : ''}`}
-                            onClick={handlePrevMonth}
-                            disabled={isPrevMonthDisabled} // Disable if it's the earliest month
-                        >
-                            <span><FontAwesomeIcon icon={faArrowLeft} /></span>
+                    <div className="change_month">
+                        <button className={`arrow_button ${isPrevMonthDisabled ? 'disabled' : ''}`} onClick={handlePrevMonth} disabled={isPrevMonthDisabled}>
+                            <FontAwesomeIcon icon={faArrowLeft} />
                         </button>
-                        <button onClick={handleNextMonth}>
-                            <span><FontAwesomeIcon icon={faArrowRight} /></span>
+                        <button className="arrow_button" onClick={handleNextMonth}>
+                            <FontAwesomeIcon icon={faArrowRight} />
                         </button>
                     </div>
                 </div>
                 <div className="calendar">
-                    <div className="day_names">
-                        {weeklyDays.map(day => (
-                            <span key={day}>{day}</span>
+                    <div className="weekdays">
+                        {weeklyDays.map((day) => (
+                            <span key={day} className="weekday">{day}</span>
                         ))}
                     </div>
                     <div className="days">
@@ -232,20 +238,19 @@ const DatePicker = () => {
                                         <div>{reminders[`${currentYear}-${currentMonth}-${day}`]}</div>
                                     </div>
                                 )}
-                                {day && reminders[`${currentYear}-${currentMonth}-${day}`]
-                                    && (
-                                        <span className="hasReminder"></span>
-                                    )}
+                                {day && reminders[`${currentYear}-${currentMonth}-${day}`] && (
+                                    <span className="hasReminder"></span>
+                                )}
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
             <form id="reminder_form" className="reminder_form" onSubmit={handleSubmit}>
-                <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`}>
+                <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`} ref={reminderRef}>
                     <div>
                         <div className="reminder_date_wrap">
-                            {selectedDate} {months[selectedMonth]} {selectedYear}
+                            {selectedDate} {months[selectedMonth]} {selectedYear} {getDayOfWeek(selectedYear, selectedMonth, selectedDate)}
                         </div>
                         <input type="text" placeholder="Event Name" name="event_name" id="event_name" className="event_name" />
                         <textarea
@@ -288,6 +293,6 @@ const DatePicker = () => {
             </form>
         </div>
     );
-}
+};
 
 export default DatePicker;
