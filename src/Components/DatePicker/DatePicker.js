@@ -126,9 +126,9 @@ const DatePicker = () => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowMonthsDropdown(false);
             }
-            if (reminderRef.current && !reminderRef.current.contains(event.target)) {
-                setShowReminderArea(false);
-            }
+            // if (reminderRef.current && !reminderRef.current.contains(event.target)) {
+            //     setShowReminderArea(false);
+            // }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
@@ -248,6 +248,12 @@ const DatePicker = () => {
             </div>
             <form id="reminder_form" className="reminder_form" onSubmit={handleSubmit}>
                 <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`} ref={reminderRef}>
+                    <div className="reminder_head">
+                        <span className="selected_date">
+                            {`${getDayOfWeek(selectedYear, selectedMonth, selectedDate)}, ${selectedDate} ${months[selectedMonth]} ${selectedYear}`}
+                        </span>
+                        <span className="reminder_close" onClick={resetForm}>X</span>
+                    </div>
                     <div>
                         <div className="reminder_date_wrap">
                             {selectedDate} {months[selectedMonth]} {selectedYear} {getDayOfWeek(selectedYear, selectedMonth, selectedDate)}
