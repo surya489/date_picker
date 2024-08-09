@@ -1,8 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './DatePicker.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+
+// Function to remove reminders of the Past Dates
+const removeExpiredReminders = (reminders, today) => {
+    const updatedReminders = { ...reminders };
+
+    Object.keys(updatedReminders).forEach((key) => {
+        const [year, month, day] = key.split('-').map(Number);
+        const reminderDate = new Date(year, month, day);
+
+        if (reminderDate < today) {
+            delete updatedReminders[key]; // Remove expired reminder
+        }
+    });
+
+    return updatedReminders;
+};
 
 const DatePicker = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -80,26 +96,12 @@ const DatePicker = () => {
         addReminder(); // Call addReminder to handle validation and submission
     };
 
-    // Function to print the date and reminder text separately
-    const printReminders = () => {
-        Object.entries(reminders).forEach(([date, text]) => {
-            const [year, month, day] = date.split('-');
-            return (
-                <div>
-                    <div>
-                        {text}
-                    </div>
-                    <div>
-                        ${day}-${parseInt(month) + 1}-${year}
-                    </div>
-                </div>
-            )
-        });
-    };
-
-    // Call the function to print the reminders
-    printReminders();
-
+    useEffect(() => {
+        const today = new Date();
+        const updatedReminders = removeExpiredReminders(reminders, today);
+        setReminders(updatedReminders);
+        localStorage.setItem('reminders', JSON.stringify(updatedReminders)); // Update local storage
+    }, [reminders, currentMonth, currentYear]);
 
     const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
