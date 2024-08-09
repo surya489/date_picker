@@ -43,6 +43,9 @@ const DatePicker = () => {
         "July", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
 
+    const earliestYear = currentYear; // Define the earliest year to display
+    const earliestMonth = 7;   // January (0 index)
+
     const handlePrevMonth = () => {
         if (currentMonth === 0) {
             setCurrentMonth(11);
@@ -67,7 +70,6 @@ const DatePicker = () => {
         setSelectedMonth(currentMonth);
         setSelectedYear(currentYear);
         setShowReminderArea(false); // Hide reminder area initially
-        setError("");
     };
 
     const addReminder = () => {
@@ -98,12 +100,16 @@ const DatePicker = () => {
         addReminder(); // Call addReminder to handle validation and submission
     };
 
+    // Use a separate effect for reminder cleanup
     useEffect(() => {
         const today = new Date();
         const updatedReminders = removeExpiredReminders(reminders, today);
-        setReminders(updatedReminders);
-        localStorage.setItem('reminders', JSON.stringify(updatedReminders)); // Update local storage
-    }, [reminders, currentMonth, currentYear]);
+
+        if (Object.keys(updatedReminders).length !== Object.keys(reminders).length) {
+            setReminders(updatedReminders);
+            localStorage.setItem('reminders', JSON.stringify(updatedReminders)); // Update local storage
+        }
+    }, [reminders]); // Only depend on reminders
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -165,6 +171,8 @@ const DatePicker = () => {
         setShowMonthsDropdown(false); // Close the dropdown after selection
     };
 
+    const isPrevMonthDisabled = (currentYear === earliestYear && currentMonth === earliestMonth);
+
     return (
         <div className="date_picker_wrap">
             <div className="date_picker">
@@ -190,8 +198,15 @@ const DatePicker = () => {
                         <span>{currentYear}</span>
                     </div>
                     <div className="month_nav">
-                        <button onClick={handlePrevMonth}><span><FontAwesomeIcon icon={faArrowLeft} /></span></button>
-                        <button onClick={handleNextMonth}><span><FontAwesomeIcon icon={faArrowRight} /></span></button>
+                        <button className={`${isPrevMonthDisabled ? 'disabled' : ''}`}
+                            onClick={handlePrevMonth}
+                            disabled={isPrevMonthDisabled} // Disable if it's the earliest month
+                        >
+                            <span><FontAwesomeIcon icon={faArrowLeft} /></span>
+                        </button>
+                        <button onClick={handleNextMonth}>
+                            <span><FontAwesomeIcon icon={faArrowRight} /></span>
+                        </button>
                     </div>
                 </div>
                 <div className="calendar">
