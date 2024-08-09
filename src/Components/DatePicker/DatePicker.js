@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import './DatePicker.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,6 +36,7 @@ const DatePicker = () => {
         return storedReminders ? JSON.parse(storedReminders) : {};
     });
     const [showMonthsDropdown, setShowMonthsDropdown] = useState(false);
+    const dropdownRef = useRef(null); // Ref for the dropdown
 
     const months = [
         "Jan", "Feb", "Mar", "Apr", "May", "June",
@@ -103,6 +104,20 @@ const DatePicker = () => {
         localStorage.setItem('reminders', JSON.stringify(updatedReminders)); // Update local storage
     }, [reminders, currentMonth, currentYear]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowMonthsDropdown(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
     const getFirstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
@@ -153,7 +168,7 @@ const DatePicker = () => {
         <div className="date_picker_wrap">
             <div className="date_picker">
                 <div className="header">
-                    <div className="month_wrap">
+                    <div className="month_wrap" ref={dropdownRef}>
                         <span className="current_month">
                             <div className="selected_month" onClick={toggleDropdown}>
                                 <span>{months[currentMonth]}</span>
@@ -212,38 +227,26 @@ const DatePicker = () => {
             </div>
             <form id="reminder_form" className="reminder_form" onSubmit={handleSubmit}>
                 {selectedDate && showReminderArea && (
-                    <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`}>
-                        <textarea
-                            id="reminder"
-                            name="reminder"
-                            rows="4"
-                            cols="50"
-                            placeholder="Type Your Reminders Here . . . ."
-                            value={reminderText}
-                            onChange={(e) => setReminderText(e.target.value)}
-                        />
-                        {error && <div className="error">{error}</div>}
-                    </div>
+                    <>
+                        <h3>Add Reminder for {selectedDate}/{currentMonth + 1}/{currentYear}</h3>
+                        <div>
+                            <input
+                                type="text"
+                                value={reminderText}
+                                onChange={(e) => setReminderText(e.target.value)}
+                                placeholder="Reminder text"
+                            />
+                        </div>
+                        <div>
+                            <button type="submit">Set Reminder</button>
+                            <button type="button" onClick={resetForm}>Cancel</button>
+                        </div>
+                    </>
                 )}
-                <div className="add_reminder">
-                    {!showReminderArea ? (
-                        <button onClick={() => setShowReminderArea(true)}
-                            className={`btn ${showReminderArea ? 'clicked' : ''}`}
-                            disabled={showReminderArea}
-                        >
-                            {showReminderArea ? "Add Reminder" : 'Set Reminder'}
-                        </button>
-                    ) : (
-                        <input
-                            type="submit"
-                            className="btn clicked"
-                            value="Add Reminder"
-                        />
-                    )}
-                </div>
+                {error && <p className="error_message">{error}</p>}
             </form>
         </div>
     );
-}
+};
 
 export default DatePicker;
