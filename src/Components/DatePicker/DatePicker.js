@@ -67,6 +67,7 @@ const DatePicker = () => {
         setSelectedMonth(currentMonth);
         setSelectedYear(currentYear);
         setShowReminderArea(false); // Hide reminder area initially
+        setError("");
     };
 
     const addReminder = () => {
@@ -227,26 +228,38 @@ const DatePicker = () => {
             </div>
             <form id="reminder_form" className="reminder_form" onSubmit={handleSubmit}>
                 {selectedDate && showReminderArea && (
-                    <>
-                        <h3>Add Reminder for {selectedDate}/{currentMonth + 1}/{currentYear}</h3>
-                        <div>
-                            <input
-                                type="text"
-                                value={reminderText}
-                                onChange={(e) => setReminderText(e.target.value)}
-                                placeholder="Reminder text"
-                            />
-                        </div>
-                        <div>
-                            <button type="submit">Set Reminder</button>
-                            <button type="button" onClick={resetForm}>Cancel</button>
-                        </div>
-                    </>
+                    <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`}>
+                        <textarea
+                            id="reminder"
+                            name="reminder"
+                            rows="4"
+                            cols="50"
+                            placeholder="Type Your Reminders Here . . . ."
+                            value={reminderText}
+                            onChange={(e) => setReminderText(e.target.value)}
+                        />
+                        {error && <div className="error">{error}</div>}
+                    </div>
                 )}
-                {error && <p className="error_message">{error}</p>}
+                <div className="add_reminder">
+                    {!showReminderArea ? (
+                        <button onClick={() => setShowReminderArea(true)}
+                            className={`btn ${showReminderArea ? 'clicked' : ''}`}
+                            disabled={showReminderArea}
+                        >
+                            {showReminderArea ? "Add Reminder" : 'Set Reminder'}
+                        </button>
+                    ) : (
+                        <input
+                            type="submit"
+                            className="btn clicked"
+                            value="Add Reminder"
+                        />
+                    )}
+                </div>
             </form>
         </div>
     );
-};
+}
 
 export default DatePicker;

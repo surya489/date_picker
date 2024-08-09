@@ -155,12 +155,12 @@
 
 .hasReminder {
     position: absolute;
-    width: 5px;
-    height: 5px;
+    width: 4px;
+    height: 4px;
     background: red;
     border-radius: 50%;
-    top: 20%;
-    right: 20px;
+    top: 10%;
+    right: 5px;
 }
 
 .month_wrap {
