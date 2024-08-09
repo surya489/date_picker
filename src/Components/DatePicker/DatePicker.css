@@ -4,6 +4,8 @@
 }
 
 .date_picker_wrap {
+    position: relative;
+    overflow: hidden;
     max-width: 500px;
     width: 100%;
     margin: auto;
@@ -133,19 +135,31 @@
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: max-height 0.5s, opacity 0.5s;
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    min-height: 312px;
+    height: 100%;
+    background: rebeccapurple;
+    transition: all 0.5s;
 }
 
 .reminder_text.show {
     max-height: 100px;
     opacity: 1;
+    right: 0;
 }
 
-.reminder_text textarea {
+textarea,
+input:not([type="submit"]) {
     display: block;
-    width: 99%;
+    width: 100%;
     margin: 0;
+    outline: none;
     padding: 0;
+    border: 1px solid red;
+    box-sizing: border-box;
 }
 
 .error {

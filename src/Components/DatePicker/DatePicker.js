@@ -43,6 +43,10 @@ const DatePicker = () => {
         "July", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
 
+    const weeklyDays = [
+        "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+    ]
+
     const earliestYear = currentYear; // Define the earliest year to display
     const earliestMonth = 7;   // January (0 index)
 
@@ -211,13 +215,9 @@ const DatePicker = () => {
                 </div>
                 <div className="calendar">
                     <div className="day_names">
-                        <span>Sun</span>
-                        <span>Mon</span>
-                        <span>Tue</span>
-                        <span>Wed</span>
-                        <span>Thu</span>
-                        <span>Fri</span>
-                        <span>Sat</span>
+                        {weeklyDays.map(day => (
+                            <span key={day}>{day}</span>
+                        ))}
                     </div>
                     <div className="days">
                         {days.map((day, index) => (
@@ -242,8 +242,12 @@ const DatePicker = () => {
                 </div>
             </div>
             <form id="reminder_form" className="reminder_form" onSubmit={handleSubmit}>
-                {selectedDate && showReminderArea && (
-                    <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`}>
+                <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`}>
+                    <div>
+                        <div className="reminder_date_wrap">
+                            {selectedDate} {months[selectedMonth]} {selectedYear}
+                        </div>
+                        <input type="text" placeholder="Event Name" name="event_name" id="event_name" className="event_name" />
                         <textarea
                             id="reminder"
                             name="reminder"
@@ -253,12 +257,21 @@ const DatePicker = () => {
                             value={reminderText}
                             onChange={(e) => setReminderText(e.target.value)}
                         />
-                        {error && <div className="error">{error}</div>}
+                        {selectedDate && showReminderArea && (
+                            <div className="error">
+                                {error && (
+                                    <div className="error">{error}</div>
+                                )}
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
                 <div className="add_reminder">
                     {!showReminderArea ? (
-                        <button onClick={() => setShowReminderArea(true)}
+                        <button onClick={() => {
+                            setShowReminderArea(true);
+                            setError("");
+                        }}
                             className={`btn ${showReminderArea ? 'clicked' : ''}`}
                             disabled={showReminderArea}
                         >
