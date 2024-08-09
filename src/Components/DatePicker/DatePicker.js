@@ -36,8 +36,12 @@ const DatePicker = () => {
         return storedReminders ? JSON.parse(storedReminders) : {};
     });
     const [showMonthsDropdown, setShowMonthsDropdown] = useState(false);
+    const [datePickerHeight, setDatePickerHeight] = useState(0);
+    const [eventTitleHeight, setEventTitleHeight] = useState(0);
     const dropdownRef = useRef(null); // Ref for the dropdown
     const reminderRef = useRef(null);
+    const datePickerRef = useRef(null);
+    const eventTitleRef = useRef(null);
 
     const months = [
         "Jan", "Feb", "Mar", "Apr", "May", "June",
@@ -107,7 +111,10 @@ const DatePicker = () => {
 
     const getDayOfWeek = (year, month, day) => {
         const date = new Date(year, month, day);
-        return weeklyDays[date.getDay()];
+        const weekDays = [
+            "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+        ];
+        return weekDays[date.getDay()];
     };
 
     // Use a separate effect for reminder cleanup
@@ -137,6 +144,26 @@ const DatePicker = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+    // TO get th eheight of the DatePicker
+    useEffect(() => {
+        const updateDatePickerHeight = () => {
+            if (datePickerRef.current) {
+                setDatePickerHeight(datePickerRef.current.scrollHeight)
+            }
+            if (eventTitleRef.current) {
+                setEventTitleHeight(eventTitleRef.current.offsetWidth);
+            }
+        };
+        if (setShowReminderArea) {
+            updateDatePickerHeight();
+        }
+        window.addEventListener('resize', updateDatePickerHeight);
+        return () => {
+            window.removeEventListener('resize', updateDatePickerHeight);
+        };
+    }, []);
+
 
     const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
@@ -188,7 +215,7 @@ const DatePicker = () => {
 
     return (
         <div className="date_picker_wrap">
-            <div className="date_picker">
+            <div className="date_picker" ref={datePickerRef}>
                 <div className="header">
                     <div className="month_wrap" ref={dropdownRef}>
                         <span className="current_month">
@@ -248,53 +275,66 @@ const DatePicker = () => {
             </div>
             <form id="reminder_form" className="reminder_form" onSubmit={handleSubmit}>
                 <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`} ref={reminderRef}>
-                    <div className="reminder_head">
-                        <span className="selected_date">
-                            {`${getDayOfWeek(selectedYear, selectedMonth, selectedDate)}, ${selectedDate} ${months[selectedMonth]} ${selectedYear}`}
-                        </span>
-                        <span className="reminder_close" onClick={resetForm}>X</span>
-                    </div>
-                    <div>
-                        <div className="reminder_date_wrap">
-                            {selectedDate} {months[selectedMonth]} {selectedYear} {getDayOfWeek(selectedYear, selectedMonth, selectedDate)}
-                        </div>
-                        <input type="text" placeholder="Event Name" name="event_name" id="event_name" className="event_name" />
-                        <textarea
-                            id="reminder"
-                            name="reminder"
-                            rows="4"
-                            cols="50"
-                            placeholder="Type Your Reminders Here . . . ."
-                            value={reminderText}
-                            onChange={(e) => setReminderText(e.target.value)}
-                        />
-                        {selectedDate && showReminderArea && (
-                            <div className="error">
-                                {error && (
-                                    <div className="error">{error}</div>
+                    <div className="reminder_wrap" style={{ maxHeight: datePickerHeight + 'px' }}>
+                        <span className="reminder_close" onClick={resetForm}></span>
+                        <div className="reminder_body">
+                            <div className="reminder_dates pb_15">
+                                <div className="text_l">
+                                    <span className="f_14">{selectedDate}<span className="pl_5 f_14">{months[selectedMonth]}</span></span>
+                                    <span className="d_block f_20">{`${getDayOfWeek(selectedYear, selectedMonth, selectedDate)}`}</span>
+                                </div>
+                                <div className="d_flex">
+                                    <span className="reminder_year">{selectedYear}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="d_flex pb_10 align_start">
+                                    <div className="event_title col_20"><div ref={eventTitleRef}>Event Title </div><span>:</span></div>
+                                    <div className="col_80">
+                                        <input type="text" placeholder="Event Name" name="event_name" id="event_name" className="event_name" />
+                                    </div>
+                                </div>
+                                <div className="d_flex align_start">
+                                    <div className="event_msg col_20"><div style={{ width: eventTitleHeight + 'px' }}>Message </div><span>:</span></div>
+                                    <textarea
+                                        className="col_80"
+                                        id="reminder"
+                                        name="reminder"
+                                        rows="4"
+                                        cols="50"
+                                        placeholder="Type Your Reminders Here . . . ."
+                                        value={reminderText}
+                                        onChange={(e) => setReminderText(e.target.value)}
+                                    />
+                                </div>
+                                {selectedDate && showReminderArea && error && (
+                                    <div className="error text_c">
+                                        {error && (
+                                            <div className="error">{error}</div>
+                                        )}
+                                    </div>
                                 )}
                             </div>
-                        )}
+                        </div>
+                        <div className="add_reminder reminder_footer">
+                            <input
+                                type="submit"
+                                className="btn"
+                                value="Add Reminder"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="add_reminder">
-                    {!showReminderArea ? (
-                        <button onClick={() => {
-                            setShowReminderArea(true);
-                            setError("");
-                        }}
-                            className={`btn ${showReminderArea ? 'clicked' : ''}`}
-                            disabled={showReminderArea}
-                        >
-                            {showReminderArea ? "Add Reminder" : 'Set Reminder'}
-                        </button>
-                    ) : (
-                        <input
-                            type="submit"
-                            className="btn clicked"
-                            value="Add Reminder"
-                        />
-                    )}
+                    <button onClick={() => {
+                        setShowReminderArea(true);
+                        setError("");
+                    }}
+                        className={`btn ${showReminderArea ? 'clicked' : ''}`}
+                        disabled={showReminderArea}
+                    >
+                        Set Reminder
+                    </button>
                 </div>
             </form>
         </div>

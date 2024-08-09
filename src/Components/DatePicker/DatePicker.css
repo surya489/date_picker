@@ -1,11 +1,62 @@
+.d_block {
+    display: block;
+}
+
+.col_20 {
+    width: 20%;
+}
+
+.col_80 {
+    width: 80%;
+}
+
+.pl_5 {
+    padding-left: 5px;
+}
+
+.pb_10 {
+    padding-bottom: 10px;
+}
+
+.pb_15 {
+    padding-bottom: 15px;
+}
+
+.f_14 {
+    font-size: 14px;
+    line-height: 1;
+    display: inline-block;
+}
+
+.f_20 {
+    font-size: 20px;
+    line-height: 0.8;
+}
+
+.text_l {
+    text-align: left;
+}
+
+.text_c {
+    text-align: center;
+}
+
+.d_flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.align_start {
+    align-items: flex-start;
+}
+
 .disabled,
 .header button.disabled {
     cursor: not-allowed;
 }
 
 .date_picker_wrap {
-    position: relative;
-    overflow: hidden;
     max-width: 500px;
     width: 100%;
     margin: auto;
@@ -100,7 +151,6 @@
 
 .add_reminder {
     text-align: center;
-    padding: 10px;
 }
 
 .add_reminder .btn {
@@ -113,6 +163,11 @@
     transition: all .3s;
 }
 
+.btn.hide_btn {
+    opacity: 0;
+    visibility: hidden;
+}
+
 .add_reminder .btn:hover {
     background-color: #fff;
     color: blue;
@@ -123,6 +178,8 @@
     background-color: #fff;
     color: blue;
     border-color: blue;
+    opacity: 0;
+    visibility: hidden;
 }
 
 .btn.clicked:hover {
@@ -136,20 +193,95 @@
     overflow: hidden;
     opacity: 0;
     position: absolute;
-    top: 0;
-    right: -100%;
-    width: 70%;
+    top: -100%;
+    right: 50%;
+    width: 100%;
+    margin: auto;
     min-height: 312px;
     height: 100%;
-    background: rebeccapurple;
+    max-height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    transform: translate(50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.5s;
 }
 
 .reminder_text.show {
-    max-height: 100px;
     opacity: 1;
-    right: 0;
+    top: 50%;
 }
+
+.reminder_wrap {
+    position: relative;
+    color: #fff;
+    width: auto;
+    background: rgb(0, 0, 255, 0.6);
+    height: auto;
+    padding: 20px;
+    gap: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+}
+
+.reminder_dates {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    height: 100%;
+}
+
+.reminder_year {
+    font-size: 26px;
+}
+
+.reminder_close {
+    display: block;
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    background: #fff;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: all .5s;
+}
+
+.reminder_close::before,
+.reminder_close::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background: blue;
+    transform: rotate(45deg);
+    transition: all .5s;
+}
+
+.reminder_close:hover {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+.reminder_close:hover::before,
+.reminder_close:hover::after {
+    background-color: red;
+}
+
+.reminder_close::after {
+    transform: rotate(150deg);
+}
+
 
 textarea,
 input:not([type="submit"]) {
@@ -320,6 +452,21 @@ input:not([type="submit"]) {
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
     border-bottom: 8px solid rgb(0, 0, 255);
+}
+
+.event_msg,
+.event_title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+#event_name,
+#reminder {
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 @media(max-width: 740px) {
