@@ -39,6 +39,7 @@ const DatePicker = () => {
     const [showMonthsDropdown, setShowMonthsDropdown] = useState(false);
     const [datePickerHeight, setDatePickerHeight] = useState(0);
     const [eventTitleHeight, setEventTitleHeight] = useState(0);
+    const [notify, setNotify] = useState(0);
     const dropdownRef = useRef(null); // Ref for the dropdown
     const reminderRef = useRef(null);
     const datePickerRef = useRef(null);
@@ -90,9 +91,18 @@ const DatePicker = () => {
                 eventTitle = "No Title";
             }
             setError("");
+
+            // Get the current reminders for the selected date
+            const dateKey = `${selectedYear}-${selectedMonth}-${selectedDate}`;
+            const existingReminders = reminders[dateKey] || [];
+
+            // Create a new reminder object
+            const newReminder = { reminderText, eventTitle };
+
+            // Update the reminders array for the selected date
             const newReminders = {
                 ...reminders,
-                [`${selectedYear}-${selectedMonth}-${selectedDate}`]: { reminderText, eventTitle },
+                [dateKey]: [...(Array.isArray(existingReminders) ? existingReminders : []), newReminder],
             };
 
             setReminders(newReminders);
@@ -217,7 +227,35 @@ const DatePicker = () => {
     };
 
     const isPrevMonthDisabled = (currentYear === earliestYear && currentMonth === earliestMonth);
-    console.log(reminders)
+    console.log(reminders);
+
+    useEffect(() => {
+        const reminderKey = `${selectedYear}-${selectedMonth}-${selectedDate}`;
+        const reminder = reminders[reminderKey] || [];
+        setNotify(reminder.length);
+    }, [selectedYear, selectedMonth, selectedDate, reminders]);
+
+    const getReminders = () => {
+        const reminderKey = `${selectedYear}-${selectedMonth}-${selectedDate}`;
+        const reminder = reminders[reminderKey];
+
+        if (reminder && reminder.length > 0) {
+            return (
+                <div>
+                    {reminder.map((reminder, index) => (
+                        <div key={index}>
+                            <div>
+                                <p><strong>Event Title:</strong> {reminder.eventTitle}</p>
+                            </div>
+                            <div>
+                                <p><strong>Reminder:</strong> {reminder.reminderText}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+    };
     return (
         <div className="date_picker_wrap">
             <div className="date_picker" ref={datePickerRef}>
@@ -266,7 +304,7 @@ const DatePicker = () => {
                             >
                                 {day}
                                 {day && reminders[`${currentYear}-${currentMonth}-${day}`] && (
-                                    <div className="reminder_info">
+                                    <div className={`${notify} reminder_info`}>
                                         <div>{reminders[`${currentYear}-${currentMonth}-${day}`].reminderText}</div>
                                     </div>
                                 )}
@@ -291,6 +329,9 @@ const DatePicker = () => {
                                 <div className="d_flex">
                                     <span className="reminder_year">{selectedYear}</span>
                                 </div>
+                            </div>
+                            <div className="existing_reminders">
+                                {getReminders()}
                             </div>
                             <div>
                                 <div className="d_flex pb_10 align_start">
