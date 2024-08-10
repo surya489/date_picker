@@ -29,7 +29,7 @@ const DatePicker = () => {
     const [selectedYear, setSelectedYear] = useState(today.getFullYear());
     const [showReminderArea, setShowReminderArea] = useState(false);
     const [reminderText, setReminderText] = useState("");
-    const [eventTitle, setEventTitle] = useState("");
+    let [eventTitle, setEventTitle] = useState("");
     const [error, setError] = useState("");
     const [reminders, setReminders] = useState(() => {
         // Retrieve stored reminders from local storage on initial render
@@ -86,6 +86,9 @@ const DatePicker = () => {
         if (reminderText.trim() === "") {
             setError("Reminder text cannot be empty");
         } else {
+            if (eventTitle.trim() === "") {
+                eventTitle = "No Title";
+            }
             setError("");
             const newReminders = {
                 ...reminders,
