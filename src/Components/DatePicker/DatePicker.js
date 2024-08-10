@@ -29,6 +29,7 @@ const DatePicker = () => {
     const [selectedYear, setSelectedYear] = useState(today.getFullYear());
     const [showReminderArea, setShowReminderArea] = useState(false);
     const [reminderText, setReminderText] = useState("");
+    const [eventTitle, setEventTitle] = useState("");
     const [error, setError] = useState("");
     const [reminders, setReminders] = useState(() => {
         // Retrieve stored reminders from local storage on initial render
@@ -88,7 +89,7 @@ const DatePicker = () => {
             setError("");
             const newReminders = {
                 ...reminders,
-                [`${selectedYear}-${selectedMonth}-${selectedDate}`]: reminderText,
+                [`${selectedYear}-${selectedMonth}-${selectedDate}`]: { reminderText, eventTitle },
             };
 
             setReminders(newReminders);
@@ -100,6 +101,7 @@ const DatePicker = () => {
 
     const resetForm = () => {
         setReminderText("");
+        setEventTitle("");
         setShowReminderArea(false);
         setError("");
     };
@@ -212,7 +214,7 @@ const DatePicker = () => {
     };
 
     const isPrevMonthDisabled = (currentYear === earliestYear && currentMonth === earliestMonth);
-
+    console.log(reminders)
     return (
         <div className="date_picker_wrap">
             <div className="date_picker" ref={datePickerRef}>
@@ -262,7 +264,7 @@ const DatePicker = () => {
                                 {day}
                                 {day && reminders[`${currentYear}-${currentMonth}-${day}`] && (
                                     <div className="reminder_info">
-                                        <div>{reminders[`${currentYear}-${currentMonth}-${day}`]}</div>
+                                        <div>{reminders[`${currentYear}-${currentMonth}-${day}`].reminderText}</div>
                                     </div>
                                 )}
                                 {day && reminders[`${currentYear}-${currentMonth}-${day}`] && (
@@ -291,7 +293,12 @@ const DatePicker = () => {
                                 <div className="d_flex pb_10 align_start">
                                     <div className="event_title col_20"><div ref={eventTitleRef}>Event Title </div><span>:</span></div>
                                     <div className="col_80">
-                                        <input type="text" placeholder="Event Name" name="event_name" id="event_name" className="event_name" />
+                                        <input
+                                            value={eventTitle}
+                                            onChange={(e) => {
+                                                setEventTitle(e.target.value)
+                                            }}
+                                            type="text" placeholder="Event Name" name="event_name" id="event_name" className="event_name" />
                                     </div>
                                 </div>
                                 <div className="d_flex align_start">
