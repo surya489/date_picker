@@ -47,8 +47,20 @@
     justify-content: center;
 }
 
+.gap_15 {
+    gap: 15px;
+}
+
 .align_start {
     align-items: flex-start;
+}
+
+.max_width_500 {
+    max-width: 500px;
+}
+
+.w_100 {
+    width: 100%;
 }
 
 .disabled,
@@ -188,6 +200,10 @@
     border-color: transparent;
 }
 
+.reminder_body {
+    min-width: 500px;
+}
+
 .reminder_text {
     max-height: 0;
     overflow: hidden;
@@ -228,6 +244,28 @@
     border-radius: 4px;
 }
 
+.reminder_popup {
+    position: relative;
+}
+
+.reminder_details:not(.add_new_reminder) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.reminder_details.hide_details {
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: all .5s;
+}
+
+.reminder_details.hide_details.add_new_reminder {
+    opacity: 1;
+    visibility: visible;
+    max-height: 100%;
+}
+
 .reminder_dates {
     display: flex;
     justify-content: space-between;
@@ -242,6 +280,7 @@
 .reminder_close {
     display: block;
     position: absolute;
+    z-index: 1;
     right: -10px;
     top: -10px;
     background: #fff;
@@ -292,6 +331,7 @@ input:not([type="submit"]) {
     padding: 0;
     border: 1px solid red;
     box-sizing: border-box;
+    resize: none;
 }
 
 .error {
@@ -421,7 +461,8 @@ input:not([type="submit"]) {
     z-index: 1;
 }
 
-.month_list::-webkit-scrollbar {
+.month_list::-webkit-scrollbar,
+.reminder_wrap::-webkit-scrollbar {
     width: 0px;
 }
 

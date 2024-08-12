@@ -28,6 +28,7 @@ const DatePicker = () => {
     const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
     const [selectedYear, setSelectedYear] = useState(today.getFullYear());
     const [showReminderArea, setShowReminderArea] = useState(false);
+    const [addNewReminder, setAddNewReminder] = useState(false);
     const [reminderText, setReminderText] = useState("");
     let [eventTitle, setEventTitle] = useState("");
     const [error, setError] = useState("");
@@ -240,20 +241,28 @@ const DatePicker = () => {
         const reminder = reminders[reminderKey];
 
         if (reminder && reminder.length > 0) {
-            return (
-                <div>
-                    {reminder.map((reminder, index) => (
-                        <div key={index}>
-                            <div>
-                                <p><strong>Event Title:</strong> {reminder.eventTitle}</p>
-                            </div>
-                            <div>
-                                <p><strong>Reminder:</strong> {reminder.reminderText}</p>
-                            </div>
+            if (notify > 0) {
+                return (
+                    <div className="d_flex">
+                        <div className={`w_100 ${notify}`}>
+                            {reminder.map((reminder, index) => (
+                                <div key={index}>
+                                    <div className="d_flex pb_10">
+                                        <div className="event_title col_20">
+                                            <div ref={eventTitleRef}>Event Title </div><span>:</span>
+                                        </div>
+                                        <div className="col_80 max_width_500">{reminder.eventTitle}</div>
+                                    </div>
+                                    <div className="d_flex">
+                                        <div className="event_msg col_20"><div style={{ width: eventTitleHeight + 'px' }}>Message </div><span>:</span></div>
+                                        <div className="col_80 max_width_500">{reminder.reminderText}</div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-            );
+                    </div>
+                );
+            }
         }
     };
     return (
@@ -304,11 +313,6 @@ const DatePicker = () => {
                             >
                                 {day}
                                 {day && reminders[`${currentYear}-${currentMonth}-${day}`] && (
-                                    <div className={`${notify} reminder_info`}>
-                                        <div>{reminders[`${currentYear}-${currentMonth}-${day}`].reminderText}</div>
-                                    </div>
-                                )}
-                                {day && reminders[`${currentYear}-${currentMonth}-${day}`] && (
                                     <span className="hasReminder"></span>
                                 )}
                             </div>
@@ -318,61 +322,74 @@ const DatePicker = () => {
             </div>
             <form id="reminder_form" className="reminder_form" onSubmit={handleSubmit}>
                 <div className={`${showReminderArea ? 'show' : 'hide'} reminder_text`} ref={reminderRef}>
-                    <div className="reminder_wrap" style={{ maxHeight: datePickerHeight + 'px' }}>
-                        <span className="reminder_close" onClick={resetForm}></span>
-                        <div className="reminder_body">
-                            <div className="reminder_dates pb_15">
-                                <div className="text_l">
-                                    <span className="f_14">{selectedDate}<span className="pl_5 f_14">{months[selectedMonth]}</span></span>
-                                    <span className="d_block f_20">{`${getDayOfWeek(selectedYear, selectedMonth, selectedDate)}`}</span>
-                                </div>
-                                <div className="d_flex">
-                                    <span className="reminder_year">{selectedYear}</span>
-                                </div>
-                            </div>
-                            <div className="existing_reminders">
-                                {getReminders()}
-                            </div>
-                            <div>
-                                <div className="d_flex pb_10 align_start">
-                                    <div className="event_title col_20"><div ref={eventTitleRef}>Event Title </div><span>:</span></div>
-                                    <div className="col_80">
-                                        <input
-                                            value={eventTitle}
-                                            onChange={(e) => {
-                                                setEventTitle(e.target.value)
-                                            }}
-                                            type="text" placeholder="Event Name" name="event_name" id="event_name" className="event_name" />
+                    <div className="reminder_popup" style={{ maxHeight: datePickerHeight + 'px' }}>
+                        <span className="reminder_close" onClick={() => {
+                            resetForm();
+                            setAddNewReminder(false);
+                        }}></span>
+                        <div className="reminder_wrap" style={{ maxHeight: datePickerHeight + 'px' }}>
+                            <div className="reminder_body">
+                                <div className="reminder_dates pb_15">
+                                    <div className="text_l">
+                                        <span className="f_14">{selectedDate}<span className="pl_5 f_14">{months[selectedMonth]}</span></span>
+                                        <span className="d_block f_20">{`${getDayOfWeek(selectedYear, selectedMonth, selectedDate)}`}</span>
+                                    </div>
+                                    <div className="d_flex">
+                                        <span className="reminder_year">{selectedYear}</span>
                                     </div>
                                 </div>
-                                <div className="d_flex align_start">
-                                    <div className="event_msg col_20"><div style={{ width: eventTitleHeight + 'px' }}>Message </div><span>:</span></div>
-                                    <textarea
-                                        className="col_80"
-                                        id="reminder"
-                                        name="reminder"
-                                        rows="4"
-                                        cols="50"
-                                        placeholder="Type Your Reminders Here . . . ."
-                                        value={reminderText}
-                                        onChange={(e) => setReminderText(e.target.value)}
-                                    />
+                                <div className={`${addNewReminder ? 'yes' : ''} existing_reminders`}>
+                                    {getReminders()}
                                 </div>
-                                {selectedDate && showReminderArea && error && (
-                                    <div className="error text_c">
-                                        {error && (
-                                            <div className="error">{error}</div>
-                                        )}
+                                <div>
+                                    <div className="d_flex pb_10 align_start">
+                                        <div className="event_title col_20"><div ref={eventTitleRef}>Event Title </div><span>:</span></div>
+                                        <div className="col_80">
+                                            <input
+                                                value={eventTitle}
+                                                onChange={(e) => {
+                                                    setEventTitle(e.target.value)
+                                                }}
+                                                type="text"
+                                                placeholder="Event Name"
+                                                name="event_name"
+                                                id="event_name"
+                                                className="event_name"
+                                            />
+                                        </div>
                                     </div>
+                                    <div className="d_flex align_start">
+                                        <div className="event_msg col_20"><div style={{ width: eventTitleHeight + 'px' }}>Message </div><span>:</span></div>
+                                        <textarea
+                                            className="col_80"
+                                            id="reminder"
+                                            name="reminder"
+                                            rows="4"
+                                            cols="50"
+                                            placeholder="Type Your Reminders Here . . . ."
+                                            value={reminderText}
+                                            onChange={(e) => setReminderText(e.target.value)}
+                                        />
+                                    </div>
+                                    {selectedDate && showReminderArea && error && (
+                                        <div className="error text_c">
+                                            {error && (
+                                                <div className="error">{error}</div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="add_reminder d_flex gap_15 reminder_footer">
+                                {notify > 0 && (
+                                    <input type="button" className="btn" value="Your Reminders" />
                                 )}
+                                <input
+                                    type="submit"
+                                    className="btn"
+                                    value="Add Reminder"
+                                />
                             </div>
-                        </div>
-                        <div className="add_reminder reminder_footer">
-                            <input
-                                type="submit"
-                                className="btn"
-                                value="Add Reminder"
-                            />
                         </div>
                     </div>
                 </div>
